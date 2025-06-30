@@ -1,0 +1,17 @@
+{
+  "institution": {
+    "title": "Hospizgruppe Seligenstadt und Umgebung",
+    "address": [
+      "Frankfurter Str.18",
+      "63500 Seligenstadt"
+    ],
+    "website": "https://www.hospiz-seligenstadt.de",
+    "email": "kontakt@hospiz-seligenstadt.de"
+  },
+  "coordinator": {
+    "title": "Koordinatorin",
+    "name": "Stefanie Basch",
+    "phone": "01785646979",
+    "email": "mr.schulz@gmx.net"
+  }
+}

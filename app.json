@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "HospizApp",
+    "slug": "hospiz-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain",
+      "textColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "de.ihredomain.hospizapp",
+      "buildNumber": "1",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDgjIo2N5UHrTqpM-59gU3dwTNb8EBsFb0"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "versionCode": 1,
+      "package": "de.ihredomain.hospizapp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDgjIo2N5UHrTqpM-59gU3dwTNb8EBsFb0"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

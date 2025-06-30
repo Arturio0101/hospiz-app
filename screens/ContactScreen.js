@@ -1,0 +1,217 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Linking,
+  Alert,
+} from 'react-native';
+import contactData from '../data/contactData.json';
+
+export default function ContactScreen() {
+  const openLink = async (url) => {
+  try {
+    // Если это телефон, подкорректируем номер (если не начинается с +)
+    if (url.startsWith('tel:')) {
+      let phoneNumber = url.slice(4);
+      // Если номер начинается не с +, добавим +49 (для Германии)
+      if (!phoneNumber.startsWith('+')) {
+        phoneNumber = '+49' + phoneNumber.replace(/^0+/, ''); 
+        url = `tel:${phoneNumber}`;
+      }
+    }
+
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      // Попробуем открыть в любом случае, если это телефон — иногда работает на Android
+      if (url.startsWith('tel:')) {
+        try {
+          await Linking.openURL(url);
+        } catch {
+          Alert.alert(
+            'Link kann nicht geöffnet werden',
+            `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
+          );
+        }
+      } else {
+        Alert.alert(
+          'Link kann nicht geöffnet werden',
+          `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
+        );
+      }
+    }
+  } catch (err) {
+    console.error("Couldn't open link", err);
+    Alert.alert(
+      'Fehler',
+      'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
+    );
+  }
+};
+
+  return (
+    <ScrollView style={styles.container}>
+      {/* Institution Info */}
+      {contactData?.institution && (
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{contactData.institution.title}</Text>
+          {contactData.institution.address?.map((line, index) => (
+            <Text key={index} style={styles.text}>
+              {line}
+            </Text>
+          ))}
+          {contactData.institution.website && (
+            <TouchableOpacity
+              accessibilityRole="link"
+              accessibilityLabel={`Website öffnen: ${contactData.institution.website}`}
+              onPress={() => openLink(contactData.institution.website)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.link}>
+                {contactData.institution.website.replace('https://', '')}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {contactData.institution.email && (
+            <TouchableOpacity
+              accessibilityRole="link"
+              accessibilityLabel={`E-Mail senden an: ${contactData.institution.email}`}
+              onPress={() => openLink(`mailto:${contactData.institution.email}`)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.link}>
+                E-Mail: {contactData.institution.email}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {/* Coordinator Info */}
+      {contactData?.coordinator && (
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{contactData.coordinator.title}</Text>
+          <Text style={styles.text}>{contactData.coordinator.name}</Text>
+          {contactData.coordinator.phone && (
+            <TouchableOpacity
+              accessibilityRole="link"
+              accessibilityLabel={`Anrufen: ${contactData.coordinator.phone}`}
+              onPress={() => openLink(`tel:${contactData.coordinator.phone}`)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.link}>
+                Telefon: {contactData.coordinator.phone}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {contactData.coordinator.email && (
+            <TouchableOpacity
+              accessibilityRole="link"
+              accessibilityLabel={`E-Mail senden an: ${contactData.coordinator.email}`}
+              onPress={() => openLink(`mailto:${contactData.coordinator.email}`)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.link}>
+                E-Mail: {contactData.coordinator.email}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {/* Social Links */}
+      <View style={styles.socialContainer}>
+        <TouchableOpacity
+          accessibilityRole="link"
+          accessibilityLabel="Facebook-Gruppe öffnen"
+          style={[styles.socialButton, styles.fbButton]}
+          onPress={() =>
+            openLink('https://www.facebook.com/hospizseligenstadt')
+          }
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={styles.socialText}>Gruppe auf Facebook öffnen</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          accessibilityRole="link"
+          accessibilityLabel="WhatsApp-Kanal öffnen"
+          style={[styles.socialButton, styles.whButton]}
+          onPress={() =>
+            openLink('https://whatsapp.com/channel/0029VazoOh48vd1MbkyjyP3E')
+          }
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={styles.socialText}>WhatsApp-Kanal öffnen</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#1f2937',
+  },
+  card: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#111827',
+  },
+  text: {
+    fontSize: 16,
+    color: '#374151',
+    marginBottom: 4,
+  },
+  link: {
+    fontSize: 16,
+    color: '#2563eb',
+    textDecorationLine: 'underline',
+    marginTop: 4,
+  },
+  socialContainer: {
+    marginTop: 10,
+    marginBottom: 30,
+  },
+  socialButton: {
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  fbButton: {
+    backgroundColor: '#1877F2',
+  },
+  whButton: {
+    backgroundColor: '#25D366',
+  },
+  socialText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+});
