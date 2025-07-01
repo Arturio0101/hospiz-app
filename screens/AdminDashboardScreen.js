@@ -152,65 +152,52 @@ const saveContactToServer = async () => {
   };
 
 const changePassword = async () => {
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    Alert.alert('Fehler', 'Bitte fülle alle Passwortfelder aus.');
-    return;
-  }
-
-  if (newPassword !== confirmPassword) {
-    Alert.alert('Fehler', 'Die neuen Passwörter stimmen nicht überein.');
-    return;
-  }
-
-  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(newPassword)) {
-    Alert.alert(
-      'Fehler',
-      'Passwort muss mindestens 8 Zeichen lang sein und Großbuchstaben, Kleinbuchstaben, eine Zahl sowie ein Sonderzeichen enthalten.'
-    );
-    return;
-  }
-
-  try {
-    const token = await AsyncStorage.getItem('adminToken');
-    if (!token) {
-      Alert.alert('Fehler', 'Kein Token gefunden. Bitte erneut einloggen.');
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Alert.alert('Fehler', 'Bitte fülle alle Passwortfelder aus.');
       return;
     }
 
-    const response = await axios.post(
-      `${SERVER_URL}/admin/change-password`,
-      { currentPassword, newPassword },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    if (response.data?.message) {
-      Alert.alert('Erfolg', response.data.message);
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } else {
-      Alert.alert('Fehler', 'Unbekannter Fehler beim Ändern des Passworts.');
-    }
-  } catch (err) {
-    console.error('Change password error:', err);
-
-    // Специальная обработка для ошибки 403 (falsches aktuelles Passwort)
-    if (err.response?.status === 403) {
-      Alert.alert('Fehler', 'Falsches aktuelles Passwort.');
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Fehler', 'Die neuen Passwörter stimmen nicht überein.');
       return;
     }
 
-    // Ошибки 400 или другие клиентские ошибки
-    if (err.response?.status === 400) {
-      Alert.alert('Fehler', err.response?.data?.error || 'Ungültige Anfrage.');
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(newPassword)) {
+      Alert.alert(
+        'Fehler',
+        'Passwort muss mindestens 8 Zeichen lang sein und Großbuchstaben, Kleinbuchstaben, eine Zahl sowie ein Sonderzeichen enthalten.'
+      );
       return;
     }
 
-    // Другие ошибки (например, 500)
-    const msg = err.response?.data?.error || 'Fehler beim Ändern des Passworts.';
-    Alert.alert('Fehler', msg);
-  }
-};
+    try {
+      const token = await AsyncStorage.getItem('adminToken');
+      if (!token) {
+        Alert.alert('Fehler', 'Kein Token gefunden. Bitte erneut einloggen.');
+        return;
+      }
+
+      const response = await axios.post(
+        `${SERVER_URL}/admin/change-password`,
+        { currentPassword, newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data?.message) {
+        Alert.alert('Erfolg', response.data.message);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        Alert.alert('Fehler', 'Unbekannter Fehler beim Ändern des Passworts.');
+      }
+    } catch (err) {
+      console.error(err);
+      const msg =
+        err.response?.data?.error || 'Fehler beim Ändern des Passworts.';
+      Alert.alert('Fehler', msg);
+    }
+  };
 
   const toggleSection = (section) => {
     setExpandedSection((prev) => (prev === section ? null : section));
