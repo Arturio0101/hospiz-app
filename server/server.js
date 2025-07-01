@@ -151,7 +151,7 @@ app.post('/admin/change-password', authenticateToken, async (req, res) => {
 app.get('/events', (req, res) => {
   fs.readFile(EVENTS_FILE, 'utf8', (err, data) => {
     if (err) {
-      console.error('Fehler beim Lesen der Events:', err);
+      console.error('❌ Fehler beim Lesen der Events:', err.code, err.message);
       return res.status(500).json({ error: 'Fehler beim Laden der Veranstaltungen.' });
     }
 
@@ -159,7 +159,7 @@ app.get('/events', (req, res) => {
       const events = JSON.parse(data);
       res.json(events);
     } catch (parseErr) {
-      console.error('Fehler beim Parsen der Events:', parseErr);
+      console.error('❌ Fehler beim Parsen der Events:', parseErr.message);
       res.status(500).json({ error: 'Ungültige Event-Daten.' });
     }
   });
