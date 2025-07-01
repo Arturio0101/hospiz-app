@@ -165,8 +165,10 @@ app.get('/events', (req, res) => {
   });
 });
 
+const DATA_DIR = path.join(__dirname, '..', 'data');
+
 app.get('/debug-files', (req, res) => {
-  fs.readdir('./data', (err, files) => {
+  fs.readdir(DATA_DIR, (err, files) => {
     if (err) {
       console.error('Ошибка при чтении папки /data:', err.message);
       return res.status(500).json({ error: 'Не удалось прочитать папку /data.' });
