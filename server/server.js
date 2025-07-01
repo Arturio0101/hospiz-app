@@ -22,7 +22,6 @@ app.use((req, res, next) => {
 
 const CONTACT_FILE = path.join(__dirname, '..', 'data', 'contactData.json');
 const CREDENTIALS_FILE = path.join(__dirname, '..', 'data', 'adminCredentials.json');
-const EVENTS_FILE = path.join(__dirname, '..', 'data', 'events.json');
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('Fehler: JWT_SECRET nicht gesetzt');
@@ -145,36 +144,6 @@ app.post('/admin/change-password', authenticateToken, async (req, res) => {
     console.error('Fehler beim Ändern des Passworts:', err);
     res.status(500).json({ error: 'Serverfehler beim Ändern des Passworts' });
   }
-});
-
-// Пример: загрузка событий из JSON-файла
-app.get('/events', (req, res) => {
-  fs.readFile(EVENTS_FILE, 'utf8', (err, data) => {
-    if (err) {
-      console.error('❌ Fehler beim Lesen der Events:', err.code, err.message);
-      return res.status(500).json({ error: 'Fehler beim Laden der Veranstaltungen.' });
-    }
-
-    try {
-      const events = JSON.parse(data);
-      res.json(events);
-    } catch (parseErr) {
-      console.error('❌ Fehler beim Parsen der Events:', parseErr.message);
-      res.status(500).json({ error: 'Ungültige Event-Daten.' });
-    }
-  });
-});
-
-const DATA_DIR = path.join(__dirname, '..', 'data');
-
-app.get('/debug-files', (req, res) => {
-  fs.readdir(DATA_DIR, (err, files) => {
-    if (err) {
-      console.error('Ошибка при чтении папки /data:', err.message);
-      return res.status(500).json({ error: 'Не удалось прочитать папку /data.' });
-    }
-    res.json({ files });
-  });
 });
 
 app.listen(PORT, () => {
