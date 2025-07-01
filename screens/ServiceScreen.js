@@ -248,7 +248,7 @@ const termsData = [
     paragraphs: [
       'Bei Fragen zu den Nutzungsbedingungen wenden Sie sich bitte an: ',
       'Hospizgruppe Seligenstadt und Umgebung',
-      'E-Mail: info@hospiz-seligenstadt.de',
+      'E-Mail: kontakt@hospiz-seligenstadt.dee',
     ],
   },
 ];
