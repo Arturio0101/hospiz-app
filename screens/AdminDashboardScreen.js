@@ -18,7 +18,7 @@ import {
 import contactData from '../data/contactData.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SERVER_URL = 'http://192.168.178.151:3001'; // Замените на ваш IP
+const SERVER_URL = 'https://hospiz-app.onrender.com';
 
 export default function AdminDashboardScreen() {
   const [events, setEvents] = useState([]);

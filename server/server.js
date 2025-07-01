@@ -28,10 +28,17 @@ if (!JWT_SECRET) {
   process.exit(1);
 }
 
-// Функция middleware для проверки токена
+// Проверка доступности каталога data
+fs.access(path.dirname(CONTACT_FILE))
+  .then(() => console.log('📂 Datenverzeichnis vorhanden:', path.dirname(CONTACT_FILE)))
+  .catch(err => {
+    console.error('❌ Datenverzeichnis fehlt oder keine Schreibrechte:', err);
+  });
+
+// Middleware: проверка токена
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Token fehlt' });
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -40,7 +47,6 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
-
 
 // === CONTACT ===
 app.get('/contact', async (req, res) => {
@@ -60,14 +66,20 @@ app.post('/contact', authenticateToken, async (req, res) => {
   console.log('📨 Eingehende Daten für /contact:', JSON.stringify(newData, null, 2));
 
   if (!newData || typeof newData !== 'object' || Array.isArray(newData)) {
+    console.log('❌ Ungültige Datenstruktur');
     return res.status(400).json({ error: 'Ungültige Kontaktdaten' });
   }
 
   try {
+    console.log('📁 Zielpfad:', CONTACT_FILE);
+    console.log('➡️ Versuch, in Datei zu schreiben...');
+
     await fs.writeFile(CONTACT_FILE, JSON.stringify(newData, null, 2), 'utf-8');
+
+    console.log('✅ Kontaktdaten erfolgreich in Datei geschrieben');
     res.json({ message: 'Kontaktdaten gespeichert' });
   } catch (error) {
-    console.error('Fehler beim Speichern der Kontaktdaten:', error);
+    console.error('❌ Fehler beim Schreiben in Datei:', error);
     res.status(500).json({ error: 'Fehler beim Speichern der Kontaktdaten' });
   }
 });
@@ -83,13 +95,11 @@ app.post('/admin/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Ungültiger Login' });
     }
 
-    // Проверка пароля через bcrypt
     const validPassword = await bcrypt.compare(password, credentials.admin_password_hash);
     if (!validPassword) {
       return res.status(401).json({ success: false, message: 'Ungültiges Passwort' });
     }
 
-    // Создаём токен (payload можно расширить)
     const token = jwt.sign({ login }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ success: true, token });
   } catch (err) {
@@ -128,7 +138,6 @@ app.post('/admin/update-login', authenticateToken, async (req, res) => {
   }
 });
 
-
 // === CHANGE PASSWORD ===
 app.post('/admin/change-password', authenticateToken, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
@@ -145,7 +154,6 @@ app.post('/admin/change-password', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Falsches aktuelles Passwort' });
     }
 
-    // Хешируем новый пароль
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
     creds.admin_password_hash = newPasswordHash;
 

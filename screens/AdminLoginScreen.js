@@ -22,7 +22,7 @@ export default function AdminLoginScreen({ navigation }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://192.168.178.151:3001/admin/login', {
+      const response = await fetch('https://hospiz-app.onrender.com/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login, password }),
