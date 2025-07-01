@@ -22,6 +22,7 @@ app.use((req, res, next) => {
 
 const CONTACT_FILE = path.join(__dirname, '..', 'data', 'contactData.json');
 const CREDENTIALS_FILE = path.join(__dirname, '..', 'data', 'adminCredentials.json');
+const EVENTS_FILE = path.join(__dirname, '..', 'data', 'events.json');
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('Fehler: JWT_SECRET nicht gesetzt');
@@ -148,9 +149,7 @@ app.post('/admin/change-password', authenticateToken, async (req, res) => {
 
 // Пример: загрузка событий из JSON-файла
 app.get('/events', (req, res) => {
-  const filePath = path.join(__dirname, 'data', 'events.json');
-
-  fs.readFile(filePath, 'utf8', (err, data) => {
+  fs.readFile(EVENTS_FILE, 'utf8', (err, data) => {
     if (err) {
       console.error('Fehler beim Lesen der Events:', err);
       return res.status(500).json({ error: 'Fehler beim Laden der Veranstaltungen.' });
