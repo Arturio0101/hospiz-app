@@ -32,13 +32,29 @@
         "googleMaps": {
           "apiKey": "AIzaSyDgjIo2N5UHrTqpM-59gU3dwTNb8EBsFb0"
         }
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "https",
+            "host": "whatsapp.com",
+            "pathPrefix": "/channel"
+          },
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b2875286-edb5-4100-bace-23344224a222"
+      }
+    }
   }
 }
