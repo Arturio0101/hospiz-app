@@ -165,6 +165,16 @@ app.get('/events', (req, res) => {
   });
 });
 
+app.get('/debug-files', (req, res) => {
+  fs.readdir('./data', (err, files) => {
+    if (err) {
+      console.error('Ошибка при чтении папки /data:', err.message);
+      return res.status(500).json({ error: 'Не удалось прочитать папку /data.' });
+    }
+    res.json({ files });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
 });
