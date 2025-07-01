@@ -30,7 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.3",
     "react": "19.0.0",
-    "react-native": "0.79.3",
+    "react-native": "0.79.4",
     "react-native-calendars": "^1.1312.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-encrypted-storage": "^4.0.3",
