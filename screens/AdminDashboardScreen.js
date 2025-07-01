@@ -192,11 +192,28 @@ const changePassword = async () => {
         Alert.alert('Fehler', 'Unbekannter Fehler beim Ändern des Passworts.');
       }
     } catch (err) {
-      console.error(err);
-      const msg =
-        err.response?.data?.error || 'Fehler beim Ändern des Passworts.';
-      Alert.alert('Fehler', msg);
+  // Если ошибка с ответом от сервера
+  if (err.response) {
+    // Если статус 403 — НЕ логируем в консоль, а показываем alert
+    if (err.response.status === 403) {
+      Alert.alert('Fehler', 'Falsches aktuelles Passwort.');
+      return;  // дальше не логируем
     }
+
+    // Для других статусов показываем ошибку с сервера и логируем
+    console.error('Change password error:', err.response.status, err.response.data);
+    const msg = err.response.data?.error || 'Fehler beim Ändern des Passworts.';
+    Alert.alert('Fehler', msg);
+  } else if (err.request) {
+    // Запрос отправлен, ответа нет (сетевая ошибка)
+    console.error('Network error:', err.message);
+    Alert.alert('Fehler', 'Keine Antwort vom Server. Bitte überprüfe deine Internetverbindung.');
+  } else {
+    // Ошибка при настройке запроса
+    console.error('Request setup error:', err.message);
+    Alert.alert('Fehler', 'Fehler beim Senden der Anfrage.');
+  }
+}
   };
 
   const toggleSection = (section) => {

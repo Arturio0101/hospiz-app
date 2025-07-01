@@ -146,6 +146,26 @@ app.post('/admin/change-password', authenticateToken, async (req, res) => {
   }
 });
 
+// Пример: загрузка событий из JSON-файла
+app.get('/events', (req, res) => {
+  const filePath = path.join(__dirname, 'data', 'events.json');
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Fehler beim Lesen der Events:', err);
+      return res.status(500).json({ error: 'Fehler beim Laden der Veranstaltungen.' });
+    }
+
+    try {
+      const events = JSON.parse(data);
+      res.json(events);
+    } catch (parseErr) {
+      console.error('Fehler beim Parsen der Events:', parseErr);
+      res.status(500).json({ error: 'Ungültige Event-Daten.' });
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,28 +7,58 @@ import {
   ScrollView,
   Linking,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import contactData from '../data/contactData.json';
+import axios from 'axios';
+
+const SERVER_URL = 'https://hospiz-app.onrender.com';
 
 export default function ContactScreen() {
-  const openLink = async (url) => {
-  try {
-    // Если это телефон, подкорректируем номер (если не начинается с +)
-    if (url.startsWith('tel:')) {
-      let phoneNumber = url.slice(4);
-      // Если номер начинается не с +, добавим +49 (для Германии)
-      if (!phoneNumber.startsWith('+')) {
-        phoneNumber = '+49' + phoneNumber.replace(/^0+/, ''); 
-        url = `tel:${phoneNumber}`;
-      }
-    }
+  const [contactData, setContactData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      // Попробуем открыть в любом случае, если это телефон — иногда работает на Android
+  useEffect(() => {
+    loadContactData();
+  }, []);
+
+  const loadContactData = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${SERVER_URL}/contact`);
+      if (res.data) {
+        // Гарантируем, что адрес - массив строк
+        if (
+          !res.data.institution.address ||
+          !Array.isArray(res.data.institution.address)
+        ) {
+          res.data.institution.address = [''];
+        }
+        setContactData(res.data);
+      } else {
+        Alert.alert('Fehler', 'Kontaktdaten konnten nicht geladen werden.');
+      }
+    } catch (err) {
+      Alert.alert('Fehler', 'Fehler beim Laden der Kontaktdaten vom Server.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openLink = async (url) => {
+    try {
       if (url.startsWith('tel:')) {
+        let phoneNumber = url.slice(4);
+        if (!phoneNumber.startsWith('+')) {
+          phoneNumber = '+49' + phoneNumber.replace(/^0+/, '');
+          url = `tel:${phoneNumber}`;
+        }
+      }
+
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else if (url.startsWith('tel:')) {
         try {
           await Linking.openURL(url);
         } catch {
@@ -43,20 +73,35 @@ export default function ContactScreen() {
           `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
         );
       }
+    } catch (err) {
+      console.error("Couldn't open link", err);
+      Alert.alert(
+        'Fehler',
+        'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
+      );
     }
-  } catch (err) {
-    console.error("Couldn't open link", err);
-    Alert.alert(
-      'Fehler',
-      'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', flex: 1 }]}>
+        <ActivityIndicator size="large" color="#2563eb" />
+      </View>
     );
   }
-};
+
+  if (!contactData) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', flex: 1 }]}>
+        <Text style={styles.text}>Keine Kontaktdaten verfügbar.</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       {/* Institution Info */}
-      {contactData?.institution && (
+      {contactData.institution && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{contactData.institution.title}</Text>
           {contactData.institution.address?.map((line, index) => (
@@ -92,7 +137,7 @@ export default function ContactScreen() {
       )}
 
       {/* Coordinator Info */}
-      {contactData?.coordinator && (
+      {contactData.coordinator && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{contactData.coordinator.title}</Text>
           <Text style={styles.text}>{contactData.coordinator.name}</Text>
@@ -157,13 +202,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#ffffff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#1f2937',
   },
   card: {
     backgroundColor: '#f3f4f6',

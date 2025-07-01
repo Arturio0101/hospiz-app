@@ -13,24 +13,23 @@ const HomeScreen = ({ navigation }) => {
     };
   }, []);
 
-  const handleSecretTap = () => {
-    setTapCount(prev => {
-      const newCount = prev + 1;
-
-      if (newCount >= 5) {
-        setTapCount(0);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        if (navigation && navigation.navigate) {
-          navigation.navigate('AdminLogin');
-        } else {
-          Alert.alert('Navigation not available');
-        }
+  useEffect(() => {
+    if (tapCount >= 5) {
+      setTapCount(0);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (navigation && navigation.navigate) {
+        navigation.navigate('AdminLogin');
       } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => setTapCount(0), 3000);
+        Alert.alert('Navigation not available');
       }
-      return newCount;
-    });
+    } else if (tapCount > 0) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setTapCount(0), 3000);
+    }
+  }, [tapCount, navigation]);
+
+  const handleSecretTap = () => {
+    setTapCount(prev => prev + 1);
   };
 
   const buttons = [
