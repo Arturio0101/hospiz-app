@@ -34,7 +34,7 @@ export default function CalendarScreen() {
       },
     },
     {
-      title: 'Start EintopfStammtisch trauernder Männer',
+      title: 'Start Eintopf Stammtisch trauernder Männer',
       dates: [
         '2025-02-08', '2025-03-22', '2025-04-12',
         '2025-05-24', '2025-08-30', '2025-10-04',

@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "de.ihredomain.hospizapp",
+      "bundleIdentifier": "hospiz-seligenstadt.de",
       "buildNumber": "1",
       "config": {
         "googleMapsApiKey": "AIzaSyDgjIo2N5UHrTqpM-59gU3dwTNb8EBsFb0"
@@ -27,7 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "versionCode": 1,
-      "package": "de.ihredomain.hospizapp",
+      "package": "hospiz-seligenstadt.de",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDgjIo2N5UHrTqpM-59gU3dwTNb8EBsFb0"
