@@ -119,25 +119,6 @@ app.get('/admin/login', async (req, res) => {
   }
 });
 
-app.post('/admin/update-login', authenticateToken, async (req, res) => {
-  const { login } = req.body;
-  if (!login || typeof login !== 'string') {
-    return res.status(400).json({ error: 'Login erforderlich' });
-  }
-
-  try {
-    const raw = await fs.readFile(CREDENTIALS_FILE, 'utf-8');
-    const creds = JSON.parse(raw);
-    creds.admin_login = login;
-    await fs.writeFile(CREDENTIALS_FILE, JSON.stringify(creds, null, 2), 'utf-8');
-
-    res.json({ success: true, message: 'Login wurde aktualisiert' });
-  } catch (err) {
-    console.error('Fehler beim Aktualisieren des Logins:', err);
-    res.status(500).json({ error: 'Fehler beim Speichern' });
-  }
-});
-
 // === CHANGE PASSWORD ===
 app.post('/admin/change-password', authenticateToken, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
