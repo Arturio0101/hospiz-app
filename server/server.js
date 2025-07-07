@@ -52,14 +52,18 @@ function authenticateToken(req, res, next) {
 app.get('/contact', async (req, res) => {
   try {
     const data = await fs.readFile(CONTACT_FILE, 'utf-8');
-    const json = JSON.parse(data);
-    res.json(json);
+    res.setHeader('Cache-Control', 'public, max-age=300'); // кэш на 5 минут
+    res.json(JSON.parse(data));
   } catch (error) {
-    if (error.code === 'ENOENT') return res.json({});
-    console.error('Error reading contact data:', error);
     res.status(500).json({ error: 'Fehler beim Lesen der Kontaktdaten' });
   }
 });
+
+app.head('/contact', (req, res) => {
+  // Просто вызываем ту же логику, что и GET, но без тела ответа
+  res.status(200).end(); // HEAD не должен возвращать тело
+});
+
 
 app.post('/contact', authenticateToken, async (req, res) => {
   const newData = req.body;
