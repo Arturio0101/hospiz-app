@@ -46,41 +46,38 @@ export default function ContactScreen() {
   };
 
   const openLink = async (url) => {
-    try {
-      if (url.startsWith('tel:')) {
-        let phoneNumber = url.slice(4);
-        if (!phoneNumber.startsWith('+')) {
-          phoneNumber = '+49' + phoneNumber.replace(/^0+/, '');
-          url = `tel:${phoneNumber}`;
-        }
+  try {
+    // Обработка телефонных номеров: если номер начинается с tel: и без +, добавляем +49
+    if (url.startsWith('tel:')) {
+      let phoneNumber = url.slice(4).trim();
+      if (!phoneNumber.startsWith('+')) {
+        // Убираем ведущие нули и добавляем +49
+        phoneNumber = '+49' + phoneNumber.replace(/^0+/, '');
+        url = `tel:${phoneNumber}`;
       }
+    }
 
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await Linking.openURL(url);
-      } else if (url.startsWith('tel:')) {
-        try {
-          await Linking.openURL(url);
-        } catch {
-          Alert.alert(
-            'Link kann nicht geöffnet werden',
-            `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
-          );
-        }
-      } else {
-        Alert.alert(
-          'Link kann nicht geöffnet werden',
-          `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
-        );
-      }
-    } catch (err) {
-      console.error("Couldn't open link", err);
+    // Проверяем, поддерживается ли URL системой
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      // Если не поддерживается, показываем алерт с дружелюбным сообщением
       Alert.alert(
-        'Fehler',
-        'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
+        'Link kann nicht geöffnet werden',
+        `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
       );
     }
-  };
+  } catch (err) {
+    console.error("Couldn't open link", err);
+    Alert.alert(
+      'Fehler',
+      'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
+    );
+  }
+};
+
 
   if (loading) {
     return (
