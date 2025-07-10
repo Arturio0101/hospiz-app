@@ -42,3 +42,6 @@ yarn-error.*
 # log files
 *.log
 
+# Ignore native folders for Expo Prebuild
+android/
+ios/
