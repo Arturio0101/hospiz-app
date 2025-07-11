@@ -47,23 +47,19 @@ export default function ContactScreen() {
 
   const openLink = async (url) => {
   try {
-    // Обработка телефонных номеров: если номер начинается с tel: и без +, добавляем +49
-    if (url.startsWith('tel:')) {
-      let phoneNumber = url.slice(4).trim();
-      if (!phoneNumber.startsWith('+')) {
-        // Убираем ведущие нули и добавляем +49
-        phoneNumber = '+49' + phoneNumber.replace(/^0+/, '');
-        url = `tel:${phoneNumber}`;
-      }
+    let targetUrl = url;
+
+    // WhatsApp Channel workaround
+    if (url.includes('whatsapp.com/channel/')) {
+      const channelId = url.split('/channel/')[1];
+      // Универсальный deeplink, работающий на Android и iOS
+      targetUrl = `https://wa.me/channel/${channelId}`;
     }
 
-    // Проверяем, поддерживается ли URL системой
-    const supported = await Linking.canOpenURL(url);
-
+    const supported = await Linking.canOpenURL(targetUrl);
     if (supported) {
-      await Linking.openURL(url);
+      await Linking.openURL(targetUrl);
     } else {
-      // Если не поддерживается, показываем алерт с дружелюбным сообщением
       Alert.alert(
         'Link kann nicht geöffnet werden',
         `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
