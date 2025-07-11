@@ -8,6 +8,7 @@ import {
   Linking,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
 
@@ -26,7 +27,6 @@ export default function ContactScreen() {
     try {
       const res = await axios.get(`${SERVER_URL}/contact`);
       if (res.data) {
-        // Гарантируем, что адрес - массив строк
         if (
           !res.data.institution.address ||
           !Array.isArray(res.data.institution.address)
@@ -46,34 +46,41 @@ export default function ContactScreen() {
   };
 
   const openLink = async (url) => {
-  try {
-    let targetUrl = url;
+    try {
+      let targetUrl = url;
 
-    // WhatsApp Channel workaround
-    if (url.includes('whatsapp.com/channel/')) {
-      const channelId = url.split('/channel/')[1];
-      // Универсальный deeplink, работающий на Android и iOS
-      targetUrl = `https://wa.me/channel/${channelId}`;
-    }
+      // WhatsApp-Kanal: Versuch Deeplink zuerst
+      if (url.includes('whatsapp.com/channel/')) {
+        const channelId = url.split('/channel/')[1];
+        const waDeeplink = `whatsapp://channel/${channelId}`;
+        const fallbackWeb = `https://whatsapp.com/channel/${channelId}`;
 
-    const supported = await Linking.canOpenURL(targetUrl);
-    if (supported) {
-      await Linking.openURL(targetUrl);
-    } else {
+        const canOpen = await Linking.canOpenURL(waDeeplink);
+        if (canOpen) {
+          await Linking.openURL(waDeeplink);
+        } else {
+          await Linking.openURL(fallbackWeb);
+        }
+        return;
+      }
+
+      const supported = await Linking.canOpenURL(targetUrl);
+      if (supported) {
+        await Linking.openURL(targetUrl);
+      } else {
+        Alert.alert(
+          'Link kann nicht geöffnet werden',
+          `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
+        );
+      }
+    } catch (err) {
+      console.error("Couldn't open link", err);
       Alert.alert(
-        'Link kann nicht geöffnet werden',
-        `Der Link "${url}" wird von deinem Gerät nicht unterstützt.`
+        'Fehler',
+        'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
       );
     }
-  } catch (err) {
-    console.error("Couldn't open link", err);
-    Alert.alert(
-      'Fehler',
-      'Der Link konnte nicht geöffnet werden. Bitte versuche es später erneut.'
-    );
-  }
-};
-
+  };
 
   if (loading) {
     return (
@@ -93,7 +100,6 @@ export default function ContactScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Institution Info */}
       {contactData.institution && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{contactData.institution.title}</Text>
@@ -129,7 +135,6 @@ export default function ContactScreen() {
         </View>
       )}
 
-      {/* Coordinator Info */}
       {contactData.coordinator && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{contactData.coordinator.title}</Text>
@@ -161,7 +166,6 @@ export default function ContactScreen() {
         </View>
       )}
 
-      {/* Social Links */}
       <View style={styles.socialContainer}>
         <TouchableOpacity
           accessibilityRole="link"
