@@ -34,19 +34,30 @@
         }
       },
       "intentFilters": [
-        {
-          "action": "VIEW",
-          "data": {
-            "scheme": "https",
-            "host": "whatsapp.com",
-            "pathPrefix": "/channel"
-          },
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        }
-      ]
+    {
+      "action": "VIEW",
+      "data": {
+        "scheme": "https",
+        "host": "whatsapp.com",
+        "pathPrefix": "/channel"
+      },
+      "category": ["BROWSABLE", "DEFAULT"]
+    },
+    {
+      "action": "VIEW",
+      "data": {
+        "scheme": "mailto"
+      },
+      "category": ["BROWSABLE", "DEFAULT"]
+    },
+    {
+      "action": "VIEW",
+      "data": {
+        "scheme": "tel"
+      },
+      "category": ["BROWSABLE", "DEFAULT"]
+    }
+  ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -59,6 +70,7 @@
       "eas": {
         "projectId": "b2875286-edb5-4100-bace-23344224a222"
       }
-    }
+    },
+    "owner": "artik89"
   }
 }
