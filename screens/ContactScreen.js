@@ -49,7 +49,7 @@ export default function ContactScreen() {
     try {
       let targetUrl = url;
 
-      // WhatsApp-Kanal: Versuch Deeplink zuerst
+      // Deeplink-Unterstützung für WhatsApp-Kanal
       if (url.includes('whatsapp.com/channel/')) {
         const channelId = url.split('/channel/')[1];
         const waDeeplink = `whatsapp://channel/${channelId}`;
